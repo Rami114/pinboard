@@ -1,0 +1,33 @@
+{
+
+  "manifest_version": 2,
+  "name": "Pinboard",
+  "version": "1.0",
+
+  "description": "Pinboard.in extension to allow for easy bookmarking",
+  "homepage_url": "https://pinboard.in/",
+  "background": {
+      "scripts": ["background.js"]
+  },
+
+  "page_action": {
+    "browser_style": true,
+    "default_icon": {
+      "19" : "icons/pin-19.png",
+      "38" : "icons/pin-38.png"
+    },
+    "default_title": "Pinboard",
+    "default_popup" : "pinboard_menu.html"
+  },
+  "icons": {
+    "48": "icons/pinboard-48.png",
+    "96": "icons/pinboard-96.png"
+  },
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "menus",
+    "notifications"
+  ]
+}

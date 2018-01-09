@@ -1,0 +1,11 @@
+html, body {
+    margin: 0 0.2em 0.2em 0.2em;
+    width: auto;
+    min-width: 200px;
+    max-width: 400px;
+    background-color: #f8f8f8;
+}
+
+.panel-section-separator {
+    margin: 0.2em 0;
+}
