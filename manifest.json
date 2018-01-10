@@ -1,9 +1,14 @@
 {
+  "applications": {
+    "gecko": {
+      "id": "{31547e30-cfb0-43bd-9bf7-7f2d7a96fcd6}",
+      "strict_min_version": "48.0a1"
+    }
+  }
 
   "manifest_version": 2,
   "name": "Pinboard",
   "version": "1.0",
-
   "description": "Pinboard.in extension to allow for easy bookmarking",
   "homepage_url": "https://pinboard.in/",
   "background": {

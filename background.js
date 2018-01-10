@@ -99,6 +99,7 @@ browser.menus.create({
 browser.menus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
         case "pinboard-menu-notifications":
+            gShowNotifications = info.checked;
             browser.storage.local.set({showNotifications: info.checked});
             break;
         case "pinboard-menu-github":
