@@ -8,7 +8,7 @@
 
   "manifest_version": 2,
   "name": "Pinboard",
-  "version": "1.01",
+  "version": "1.0.1",
   "description": "Pinboard.in extension to allow for easy bookmarking",
   "homepage_url": "https://pinboard.in/",
   "background": {
