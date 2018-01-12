@@ -22,7 +22,12 @@ function updateNotificationSetting(setting) {
 
 function bookmark(uri, desc, title) {
     const dest = 'https://pinboard.in/add?showtags=yes&url='+encodeURIComponent(uri)+'&description='+encodeURIComponent(desc)+'&title='+encodeURIComponent(title);
-    browser.tabs.create({active: true, url: dest});
+    browser.windows.create({
+    	type: "popup",
+    	height: 350,
+        width: 725,
+    	url: dest
+    });
 }
 
 function readLater(uri, title) {
