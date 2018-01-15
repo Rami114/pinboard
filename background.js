@@ -1,8 +1,6 @@
 // Globals
 var gShowNotifications = true;
-
-// Functions
-
+// Add-on functions
 function onCreated() {
     if (browser.runtime.lastError) {
         console.log(`Error: ${browser.runtime.lastError}`);
@@ -15,23 +13,120 @@ function onError(e) {
     console.error(e);
 }
 
-function updateNotificationSetting(setting) {
-    gShowNotifications = setting.showNotifications;
-    browser.menus.update("pinboard-menu-notifications", { checked: setting.showNotifications });
+function readSettings(settings) {
+    // Api-key checks
+    let apiKey = settings.apiKey;
+    if (settings.apiKey && settings.apiKey !== undefined) {
+        apiCheck(apiKey);
+    }
+    // We will poll in the background every 5 minutes 
+    browser.alarms.create("poll-api", {
+        delayInMinutes: 5,
+        periodInMinutes: 5
+    });
+    // Determines if we should show notifications
+    gShowNotifications = (settings.showNotifications && typeof settings.showNotifications !== undefined) ? settings.showNotifications : false;
+    browser.menus.update("pinboard-menu-notifications", {
+        checked: settings.showNotifications
+    });
 }
 
+function performApiPoll() {
+    browser.storage.local.get().then((settings) => {
+        let apiKey = settings.apiKey;
+        if (settings.apiKey && settings.apiKey !== undefined) {
+            apiCheck(apiKey);
+        } else {
+            browser.storage.local.set({
+                apiStatus: "no-api-key"
+            });
+        }
+    }, onError);
+}
+
+function apiCheck(apiKey) {
+    let apiUrl = "https://api.pinboard.in/v1/user/api_token/?auth_token=" + encodeURIComponent(apiKey);
+    fetch(apiUrl).then((response) => {
+        if (response.ok) {
+            browser.storage.local.set({
+                apiStatus: "good-api-key"
+            });
+        } else {
+            browser.storage.local.set({
+                apiStatus: "bad-api-key"
+            });
+        }
+    }).catch((error) => {
+        browser.storage.local.set({
+            apiStatus: "network-issue"
+        });
+    });
+}
+
+function handleAlarm(alarmInfo) {
+    switch (alarmInfo.name) {
+        case "poll-api":
+            performApiPoll();
+            break;
+    }
+}
+
+// These two globals are to cache the last tab lookup - otherwise we ping the API consecutively
+var cacheTabUrl = '';
+var cacheTabXml = null;
+
+function clearTabCache() {
+    cacheTabUrl = '';
+    cacheTabXml = null;
+}
+
+// Our icons for the address bad
+const defaultIcons = {"19" : "icons/pin-19.png",
+                      "38" : "icons/pin-38.png"};
+const tickIcons = {"19" : "icons/pin-ticked-19.png",
+                   "38" : "icons/pin-ticked-38.png"};
+
+function checkTabUrl(tab, settings) {
+    let apiKey = settings.apiKey;
+    let apiStatus = settings.apiStatus;
+    if (apiStatus == "good-api-key") {
+        let checkUrl = 'https://api.pinboard.in/v1/posts/get?auth_token=' + encodeURIComponent(apiKey) + '&url=' + encodeURIComponent(tab.url);
+        if(checkUrl !== cacheTabUrl) {
+            fetch(checkUrl)
+                .then(response => response.text())
+                .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+                .then((xml) => { 
+                    cacheTabXml = xml; 
+                    cacheTabUrl = checkUrl;
+                    let posts = cacheTabXml.getElementsByTagName("post");
+                    if (posts.length > 0) {
+                        // We've seen this, change the icon 
+                        browser.pageAction.setIcon({tabId: tab.id, path: tickIcons});
+                    } else {
+                        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcons});
+                    }
+                });
+        }     
+    } else {
+        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcons});
+    }
+}
+
+// Pinboard functions
+
 function bookmark(uri, desc, title) {
-    const dest = 'https://pinboard.in/add?showtags=yes&url='+encodeURIComponent(uri)+'&description='+encodeURIComponent(desc)+'&title='+encodeURIComponent(title);
+    const dest = 'https://pinboard.in/add?showtags=yes&url=' + encodeURIComponent(uri) + '&description=' + encodeURIComponent(desc) + '&title=' + encodeURIComponent(title);
     browser.windows.create({
         type: "popup",
         height: 350,
         width: 725,
         url: dest
     });
+    clearTabCache();
 }
 
 function readLater(uri, title) {
-    const dest = 'https://pinboard.in/add?later=yes&noui=yes&jump=close&url='+encodeURIComponent(uri)+'&title='+encodeURIComponent(title);
+    const dest = 'https://pinboard.in/add?later=yes&noui=yes&jump=close&url=' + encodeURIComponent(uri) + '&title=' + encodeURIComponent(title);
     // We want a window far, far away
     // Ugly method to refocus our current window
     // Does not gracefully handle when you're not already logged in :(
@@ -47,9 +142,11 @@ function readLater(uri, title) {
             url: dest
         });
         // Refocus
-        browser.windows.update(windowInfo.id, {focused: true});
+        browser.windows.update(windowInfo.id, {
+            focused: true
+        });
     });
-    if(gShowNotifications) {
+    if (gShowNotifications) {
         browser.notifications.create({
             type: "basic",
             message: "Saved to read later",
@@ -57,10 +154,9 @@ function readLater(uri, title) {
             iconUrl: browser.extension.getURL("icons/pinboard-32.png")
         });
     }
+    clearTabCache();
 }
-
-// Actual menus
-
+// Creatte the contextual menus (tools and right-click)
 browser.menus.create({
     id: "pinboard-menu-notifications",
     title: "Show notifications",
@@ -68,7 +164,6 @@ browser.menus.create({
     checked: gShowNotifications,
     contexts: ["tools_menu"]
 }, onCreated);
-
 // This is primarily to force a sub-menu, but why not link to the source v0v
 browser.menus.create({
     id: "pinboard-menu-github",
@@ -76,7 +171,6 @@ browser.menus.create({
     type: "normal",
     contexts: ["tools_menu"]
 }, onCreated);
-
 browser.menus.create({
     id: "link-save-to-pinboard",
     title: "Save to Pinboard",
@@ -87,7 +181,6 @@ browser.menus.create({
     },
     contexts: ["link"]
 }, onCreated);
-
 browser.menus.create({
     id: "link-read-later",
     title: "Read later",
@@ -105,10 +198,15 @@ browser.menus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
         case "pinboard-menu-notifications":
             gShowNotifications = info.checked;
-            browser.storage.local.set({showNotifications: info.checked});
+            browser.storage.local.set({
+                showNotifications: info.checked
+            });
             break;
         case "pinboard-menu-github":
-            browser.tabs.create({active: true, url: "https://github.com/Rami114/pinboard"});
+            browser.tabs.create({
+                active: true,
+                url: "https://github.com/Rami114/pinboard"
+            });
             break;
         case "link-save-to-pinboard":
             let desc = (info.selectionText && typeof info.selectionText !== undefined) ? info.selectionText : '';
@@ -119,10 +217,10 @@ browser.menus.onClicked.addListener((info, tab) => {
             break;
     }
 });
-
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tab.url.match(/^about:/)) {
         browser.pageAction.show(tab.id);
+        browser.storage.local.get().then((settings) => {checkTabUrl(tab, settings)}, onError);
     }
 });
 
@@ -134,9 +232,12 @@ browser.runtime.onMessage.addListener((message) => {
         case "read-later":
             readLater(message.uri, message.title);
             break;
+        case "api-key-saved":
+            performApiPoll();
+            break;
     }
 });
-
 // Fires on startup
-browser.storage.local.get().then(updateNotificationSetting, onError);
-
+browser.storage.local.get().then(readSettings, onError);
+// Add alarm listener for api checks
+browser.alarms.onAlarm.addListener(handleAlarm);

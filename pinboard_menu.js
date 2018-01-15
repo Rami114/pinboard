@@ -48,3 +48,47 @@ document.addEventListener("click", (e) => {
             break
     }
 });
+
+// Api functions
+function onError(e) {
+    console.error(e);
+}
+
+// We rely on the status from storage, 
+function checkApi(settings) {
+    let apiStatus = (settings.apiStatus && typeof settings.apiStatus !== undefined) ? settings.apiStatus : "no-api-key";
+    console.log(apiStatus);
+    let noApiKey = document.getElementById("no-api-key");
+	let goodApiKey = document.getElementById("good-api-key");
+	let apiError = document.getElementById("api-error");
+	let badApiKey = document.getElementById("bad-api-key");
+    switch(apiStatus) {
+    	case "no-api-key":
+    		noApiKey.classList.remove("hidden");
+    		goodApiKey.classList.add("hidden");
+    		apiError.classList.add("hidden");
+    		badApiKey.classList.add("hidden");
+    		break;
+    	case "bad-api-key":
+    		noApiKey.classList.add("hidden");
+    		goodApiKey.classList.add("hidden");
+    		apiError.classList.add("hidden");
+    		badApiKey.classList.remove("hidden");
+    		break;
+    	case "network-issue":
+    		noApiKey.classList.add("hidden");
+    		goodApiKey.classList.add("hidden");
+    		apiError.classList.remove("hidden");
+    		badApiKey.classList.add("hidden");
+    		break
+    	case "good-api-key":
+    		noApiKey.classList.add("hidden");
+    		goodApiKey.classList.remove("hidden");
+    		apiError.classList.add("hidden");
+    		badApiKey.classList.add("hidden");
+    		break;
+    }
+}
+
+
+browser.storage.local.get().then(checkApi, onError);

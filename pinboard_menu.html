@@ -24,17 +24,31 @@
     <div class="panel-section-separator"></div>
 
     <div class="panel-list-item"> 
-          <div class="text" id="goto-unread-bookmarks">Your unread bookmarks</div> 
-      </div>
-      <div class="panel-list-item"> 
-          <div class="text" id="goto-all-bookmarks">All your bookmarks</div>  
-      </div>
-      <div class="panel-list-item"> 
-          <div class="text" id="goto-pinboard-popular">Pinboard.in popular</div> 
-      </div>
-      <div class="panel-list-item"> 
-          <div class="text" id="goto-saved-tab-sets">Your saved tab sets</div> 
-      </div>
+        <div class="text" id="goto-unread-bookmarks">Your unread bookmarks</div> 
+    </div>
+    <div class="panel-list-item"> 
+        <div class="text" id="goto-all-bookmarks">All your bookmarks</div>  
+    </div>
+    <div class="panel-list-item"> 
+        <div class="text" id="goto-pinboard-popular">Pinboard.in popular</div> 
+    </div>
+    <div class="panel-list-item"> 
+        <div class="text" id="goto-saved-tab-sets">Your saved tab sets</div> 
+    </div>
+
+    <div class="panel-section-separator"></div>
+    <div class="panel-list-item disabled" id="no-api-key"> 
+        <div class="text">Add API key to see status</div> 
+    </div>
+    <div class="panel-list-item hidden disabled" id="good-api-key"> 
+        <div class="text good-api">Valid API key</div> 
+    </div>
+    <div class="panel-list-item hidden disabled" id="api-error"> 
+        <div class="text bad-api">Error reaching API</div> 
+    </div>
+    <div class="panel-list-item hidden disabled" id="bad-api-key"> 
+        <div class="text bad-api" id="goto-unread-bookmarks">Bad API key</div> 
+    </div>
 
     <script src="pinboard_menu.js"></script>
 </body>

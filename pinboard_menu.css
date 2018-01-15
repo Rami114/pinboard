@@ -9,3 +9,21 @@ html, body {
 .panel-section-separator {
     margin: 0.2em 0;
 }
+
+.good-api {
+    background-image: url('icons/good-api.png');
+    background-repeat: no-repeat;
+    padding-left: 20px; 
+    display: block;
+}
+
+.bad-api {
+    background-image: url('icons/bad-api.png');
+    background-repeat: no-repeat;
+    padding-left: 20px; 
+    display: block;
+}
+
+.hidden {
+	display: none;
+}
