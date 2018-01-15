@@ -14,11 +14,7 @@ This plugin replicates the functionality of the legacy plugin as closely as poss
     * Add to pinboard
     * Read later
 
-## Configuration
+In addition, an optional API key for Pinboard.in can be supplied via about:addons. 
+Once an API key has been added the API status will show in the address bar popup. 
+A URL which is already bookmarked will show the Pinboard icon with a green tick in the address bar. 
 
-A single configuration option is added to enable/disable notifications, as per the original plugin.
-
-## Todo/Issues
-
-  * Adding tab sets is still todo
-  * Read later opens a popup of 100x100, if you were not already logged into Pinboard it doesn't auto-close (this may be true of the old plugin)
