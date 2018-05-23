@@ -237,6 +237,27 @@ browser.runtime.onMessage.addListener((message) => {
             break;
     }
 });
+
+browser.commands.onCommand.addListener(function(command) {
+  switch (command) {
+        case "command-save-to-pinboard":
+	        let querying = browser.tabs.query({currentWindow: true, active: true});
+            querying.then((tabs) => {
+                for (let tab of tabs) {
+                    let title = tab.title;
+                    let desc = '';
+                    let uri = tab.url;
+                    bookmark(uri, desc, title);
+                    break;
+                }
+            });
+            break;
+        case "command-all-bookmarks":
+            browser.tabs.create({active: true, url: "https://pinboard.in/"});
+            break;
+  }
+});
+
 // Fires on startup
 browser.storage.local.get().then(readSettings, onError);
 // Add alarm listener for api checks

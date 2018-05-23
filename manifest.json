@@ -15,6 +15,21 @@
       "scripts": ["background.js"]
   },
 
+  "commands": {
+    "command-all-bookmarks": {
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      },
+      "description": "View all your Pinboard bookmarks"
+    },
+    "command-save-to-pinboard": {
+      "suggested_key": {
+        "default": "Alt+Shift+P"
+      },
+      "description": "Save current URL to pinboard"
+    }
+  },
+
   "page_action": {
     "browser_style": true,
     "default_icon": {
