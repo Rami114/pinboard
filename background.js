@@ -80,7 +80,7 @@ function clearTabCache() {
     cacheTabXml = null;
 }
 
-// Our icons for the address bad
+// Our icons for the address bar
 const defaultIcon = "icons/pin.svg";
 const tickIcon = "icons/pin-ticked.svg";
 
