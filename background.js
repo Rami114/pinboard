@@ -80,11 +80,9 @@ function clearTabCache() {
     cacheTabXml = null;
 }
 
-// Our icons for the address bad
-const defaultIcons = {"19" : "icons/pin-19.png",
-                      "38" : "icons/pin-38.png"};
-const tickIcons = {"19" : "icons/pin-ticked-19.png",
-                   "38" : "icons/pin-ticked-38.png"};
+// Our icons for the address bar
+const defaultIcon = "icons/pin.svg";
+const tickIcon = "icons/pin-ticked.svg";
 
 function checkTabUrl(tab, settings) {
     let apiKey = settings.apiKey;
@@ -101,14 +99,14 @@ function checkTabUrl(tab, settings) {
                     let posts = cacheTabXml.getElementsByTagName("post");
                     if (posts.length > 0) {
                         // We've seen this, change the icon 
-                        browser.pageAction.setIcon({tabId: tab.id, path: tickIcons});
+                        browser.pageAction.setIcon({tabId: tab.id, path: tickIcon});
                     } else {
-                        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcons});
+                        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcon});
                     }
                 });
         }     
     } else {
-        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcons});
+        browser.pageAction.setIcon({tabId: tab.id, path: defaultIcon});
     }
 }
 

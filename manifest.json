@@ -32,10 +32,7 @@
 
   "page_action": {
     "browser_style": true,
-    "default_icon": {
-      "19" : "icons/pin-19.png",
-      "38" : "icons/pin-38.png"
-    },
+    "default_icon": "icons/pin.svg",
     "default_title": "Pinboard",
     "default_popup" : "pinboard_menu.html"
   },
